@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<head>
+    <title>home</title>
+    <link rel='stylesheet' href='/.cssbin/style.css'>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src='/.jsbin/is-logged-in.js'></script>
+</head>
+
+<html lang='en'>
+    <body class='dark-theme'>
+        <div class='nav-container'>
+            <p id='channel-display' style='color: var(--neutral); font-weight: bold;'>viewing global</p>
+        </div>
+        <div class='main-container main-wrapper'>
+            <div id='d1-container'>
+                <div class='d1-container-wrapper'>
+                    <button id='channel-button-m' value='0'>menu</button>
+                    <div style='margin: 4px 8px 4px 8px; width: auto; height: 3px; background-color: var(--secondary-1)'></div>
+                    <button id='channel-button-0' value='1'>general</button>
+                    <button id='channel-button-1' value='2'>channel-1</button>
+                    <button id='channel-button-2' value='2'>channel-2</button>
+                </div>
+            </div>
+            <div id='d2-container'>
+                <div class='d2-container-wrapper-1'>
+                    <input id='description-input'placeholder='description'></input>
+                    <button id='description-set-button'>set</button>
+                    <input id='banner-url-input' placeholder='banner url'></input>
+                    <button id='banner-url-set-button'>set</button>
+                </div>
+                <div class='menu-wrapper'>
+                    <button id='theme-button'>theme: dark</button>
+                    <p class='menu-container-1'>total users: 0</p>
+                    <p class='menu-container-2'>total messages: 0</p>
+                    <p class='menu-container-3'>signed-in: account</p>
+                    <button id='log-out-button'>log out</button>
+                </div>
+                <button class='message-container' style='margin: 0 8px 0 8px;'>
+                    <p style='margin-bottom: 8px;'><span style='font-weight: bold; color: var(--neutral);'>system</span></p>
+                    <p></p>
+                </button>
+            </div>
+        </div>
+        <!-- script references -->
+    </body>
+</html>

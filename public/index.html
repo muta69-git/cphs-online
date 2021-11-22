@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<head>
+    <title>home</title>
+    <link rel='stylesheet' href='/.cssbin/style.css'>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src='/.jsbin/is-logged-in.js'></script>
+</head>
+
+<html lang='en'>
+    <body>
+        <div class='nav-container'>
+            <p id='channel-display' style='color: var(--neutral); font-weight: bold;'>viewing general</p>
+        </div>
+        <div class='main-container main-wrapper'>
+            <div id='d1-container'>
+                <div class='d1-container-wrapper'>
+                    <button id='channel-button-m' value='0'>menu</button>
+                    <div style='margin: 4px 8px 4px 8px; width: auto; height: 3px; background-color: var(--secondary-1)'></div>
+                    <button id='channel-button-0' value='1'>general</button>
+                    <button id='channel-button-1' value='2'>channel-1</button>
+                    <button id='channel-button-2' value='2'>channel-2</button>
+                </div>
+            </div>
+            <div id='d2-container'>
+                <div class='d2-container-wrapper-1'>
+                    <input id='message-input' placeholder='message'></input>
+                    <button id='message-send-button'>send</button>
+                </div>
+                <div style='margin: 8px 8px 0 8px; width: auto; height: 3px; background-color: var(--secondary-1)'></div>
+                <div id='main-message-container' class='d2-container-wrapper-2'>
+                </div>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src='/.jsbin/.message-handling/load-messages.js' type='module'></script>
+        <script src='/.jsbin/message_handling.js' type='module'></script>
+        <script src='/.jsbin/load-theme.js' type='module'></script>
+    </body>
+</html>
