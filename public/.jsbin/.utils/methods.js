@@ -3,8 +3,23 @@ function removeTags(str) {
       return false;
     } else {
       str = str.toString();
-      return str.replace(/[^<@](<([^>]+)>)/ig, '');
+      return str.replace(/(<([^>]+)>)/ig, '');
    }
+}
+
+function passChannel(channel)
+{
+
+}
+
+function parseMentions(str) {
+    let mentions = str.match(/@(\S+)\b/g);
+    if (!mentions) return str;
+    
+    mentions.every(mention => {
+        str = str.replace(mention, `<span style="font-weight: bold; color: var(--neutral)">${mention}</span>`)
+    });
+    return str;
 }
 
 function validURL(str) {
@@ -27,7 +42,7 @@ async function req(path = "/", body = {}, json = true) {
     return res;
 }
 
-function load_profile(message, array, profile_opened, message_wrapper, message_container, message_author, message_content, main_message_container) {
+function load_profile() {
     profile_opened = false;
     if (profile_opened == false) {
         profile_opened = true;
@@ -99,4 +114,8 @@ function load_profile(message, array, profile_opened, message_wrapper, message_c
     }
 }
 
-export {removeTags, validURL, req, load_profile};
+function createChannel() {
+    return 
+}
+
+export {removeTags, parseMentions, validURL, req, load_profile};

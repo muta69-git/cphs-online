@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { User } = require("../globals.js");
+const { User } = require("../utils/classes.js");
 const db = require("quick.db");
 
 const data = new SlashCommandBuilder()

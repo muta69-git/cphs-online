@@ -12,7 +12,7 @@ let cookie = document.cookie;
                 body: JSON.stringify({usercookie: cookie})
         };
 
-        let res = await fetch("/login", options);
+        let res = await fetch("/account/login", options);
         res = await res.json();
     }
 })();

@@ -1,34 +1,38 @@
-// Module Imports 
+// Module Imports
 const express = require("express");
 const db = require('quick.db');
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
 
+// Routers
+const accountRouter = require('./routes/account.js');
+
 // Class Imports.
-const { Channel, User, Member, DM } = require("./globals.js");
-const { Client, Intents, Interactions, MessageEmbed, Collection } = require("discord.js");
+const { Channel, User, Member, DM } = require("./utils/classes.js");
+const { Command } = require("./utils/methods.js");
+const { Client, Intents, MessageEmbed, Collection } = require("discord.js");
 
 // Global Constants
-const ADMIN_CREDENTIALS = process.env.ADMIN_CREDENTIALS.split(";");
-const RY_CREDENTIALS = process.env.RY_CREDENTIALS.split(";");
+const ADMIN_CREDENTIALS_1 = process.env.ADMIN_CREDENTIALS_1.split(";");
+const ADMIN_CREDENTIALS_2 = process.env.ADMIN_CREDENTIALS_2.split(";");
 const DOMAIN = process.env.ACCEPTED_DOMAIN;
-const APP = express();
+const app = express();
 const PORT = 3000;
 
 // Predefined Channel Instances.
-const CHANNEL_2 = new Channel("channel 2", 2);
-const CHANNEL_1 = new Channel("channel 1", 1);
 const GLOBAL_CHAT = new Channel("global", 0);
+const CHANNEL_1 = new Channel("channel 1", 1);
+const CHANNEL_2 = new Channel("channel 2", 2);
+const ADMIN_CHAT = new Channel("admin", 3);
 
 // Predefined User Instances.
-const ADMIN_USER = new User(ADMIN_CREDENTIALS[0], ADMIN_CREDENTIALS[1], ADMIN_CREDENTIALS[2], true, ["owner", "developer", "admin"]);
-const RY_USER = new User(RY_CREDENTIALS[0], RY_CREDENTIALS[1], RY_CREDENTIALS[2], true, ["owner", "developer", "admin"]);
+const ADMIN_USER_1 = new User(ADMIN_CREDENTIALS_1[0], ADMIN_CREDENTIALS_1[1], ADMIN_CREDENTIALS_1[2], ["owner", "developer", "admin"]);
+const ADMIN_USER_2 = new User(ADMIN_CREDENTIALS_2[0], ADMIN_CREDENTIALS_2[1], ADMIN_CREDENTIALS_2[2], ["owner", "developer", "admin"]);
 
 // Process events.
 process.on("uncaughtException", err => {
     console.error(err);
 });
-
 
 // Discord Client.
 let client = new Client({
@@ -43,7 +47,6 @@ let client = new Client({
 });
 
 client.commands = new Collection();
-
 
 function flush_messages(channel_num) {
     if (channel_num == 0) {
@@ -78,12 +81,16 @@ client.on("interactionCreate", async interaction => {
 	}
 });
 
-// Express APP configuration.
-APP.use(express.static('public'));
-APP.use(express.json());
-APP.use(cookieParser());
+// Express app configuration.
+app.use(express.static("public"));""
+app.use(express.json());
+app.use(cookieParser());
 
-const server = APP.listen(PORT, async () => {
+
+// Routers
+app.use(accountRouter);
+
+const server = app.listen(PORT, async () => {
     console.clear();
     console.log(`App listening at port ${PORT}.`);
 });
@@ -91,10 +98,11 @@ const io = require("socket.io")(server);
 
 // Socket connection events.
 io.on("connection", socket => {    
-    socket.on("message", data => {
+    socket.on("message", async data => {
         let msg = data.message;
+        if (msg.content.startsWith('/')) return command(msg);
         if (!msg.content) return;
-
+        
         io.emit("message", {message: msg});
 
         // Hardwired channel Message Storage.
@@ -115,7 +123,7 @@ io.on("connection", socket => {
 });
 
 // Messages.
-APP.post("/load-messages", (req, res) => {
+app.post("/load-messages", (req, res) => {
     let body = req.body;
 
     // Hardwired channels.
@@ -134,63 +142,8 @@ APP.post("/load-messages", (req, res) => {
     }
 });
 
-// Essentials
-APP.post("/login", async (req, res) => {
-    const body = req.body;
 
-    if (body.usercookie) {
-        const cookies = req.cookies;
-        const credentials = JSON.parse(cookies["login-credentials"]);
-
-        let fetched = await db.fetch(`user.${credentials.id}`);
-
-        if (fetched === null || fetched === undefined) {
-            return res.status(200).json({"accepted": false, "reason": "Invalid cookie."});
-        } else if (fetched.email == credentials.email && fetched.password == credentials.password) {
-            return res.status(200).json({"accepted": true});
-        } else {
-            return res.status(200).json({"accepted": false, "reason": "Invalid cookie."});
-        }
-    } else {
-        let fetched = await db.fetch(`user.${body.email.replace(DOMAIN, "")}`);
-        if (fetched == null || fetched == undefined) return res.status(200).json({"accepted": false, "reason": "Entered credentials are not valid."});
-
-        res.cookie("login-credentials", JSON.stringify({username: body.username, email: body.email, password: body.password, id: fetched.id}));
-        res.status(200).json({"accepted": true});
-    }
-});
-
-APP.post("/signup", async (req, res) => {
-    let body = req.body;
-
-    if (body.email.endsWith(DOMAIN)) {
-        let uid = body.email.replace(DOMAIN, "");
-        let fetched = await db.fetch(`users.${uid}`);
-
-        if (fetched === null || fetched === undefined) {
-            let discord_guild = process.env.DISCORD_GUILD.split(";");
-
-            let guild_id = discord_guild[0];
-            let channel_id = discord_guild[1];
-
-            let guild = await client.guilds.fetch(guild_id);
-            let channel = await guild.channels.fetch(channel_id);
-
-            let em = new MessageEmbed()
-                .setColor("#FFFFFF")
-                .setTitle("***signup request:***")
-                .setDescription(`*email - \`${body.email}\`\nusername: \`${body.username}\`\npassword: \`${body.password}\`\nid: \`${body.email.replace(DOMAIN, "")}\`*`)
-            await channel.send({ embeds: [em] });
-            res.status(200).json({"accepted": false, "reason": "Thank you! Site moderators will review and accept/deny your request shortly."});
-        } else {
-            return res.status(200).json({"accepted": false, "reason": "Email address already in use."});
-        }
-    } else {
-        return res.status(200).json({"accepted": false, "reason": "Invalid email address."});
-    }
-});
-
-APP.post("/get", async (req, res) => {
+app.post("/get", async (req, res) => {
     let body = req.body;
     if (body.type == "credentials") {
         switch(body.object) {
@@ -259,7 +212,7 @@ APP.post("/get", async (req, res) => {
     }
 });
 
-APP.post("/set", async (req, res) => {
+app.post("/set", async (req, res) => {
     let body = req.body;
     const cookie = req.cookies;
     const credentials = JSON.parse(cookie["login-credentials"]);
@@ -284,6 +237,5 @@ APP.post("/set", async (req, res) => {
 });
 
 client.login(process.env.TOKEN);
-
-exports.io = io;
+exports.client = client;
 exports.flush_messages = flush_messages;

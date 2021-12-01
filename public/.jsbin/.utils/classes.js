@@ -1,13 +1,32 @@
+import { req } from "./methods.js";
+
 class Message {
-    constructor(author, channel, content, bg_url) {
+    constructor(channel, content, author) {
         let date = new Date();
         date = date.toLocaleString("en-US", {timeZone: "America/New_York"});
-        this.author = author.member;
+        this.author = author.member.member;
         this.content = content;
-        this.bg_url = author.member.settings.bg_url;
         this.timestamp = date;
-        this.channel = channel.channel;
+        this.channel = channel;
     }
 }
 
-export {Message};
+class CurrentChannel {
+    constructor() {
+        this.id = 0;
+    }
+
+    change(num) {
+        this.id = num;
+    }
+}
+
+class CurrentUser {
+    constructor() {
+        (async () => {
+            this.member = await req('/get', {type: 'member', object: 'self'});
+        })();
+    }
+}
+
+export {Message, CurrentChannel, CurrentUser};

@@ -1,3 +1,4 @@
+import { registerMessage } from "./register-messages.js";
 import { req } from "../.utils/methods.js";
 
 async function loadMessages(current_channel, main_message_container) {
@@ -16,8 +17,8 @@ async function loadMessages(current_channel, main_message_container) {
         message_wrapper.setAttribute('class', 'message-wrapper');
         message_container.setAttribute('class', 'message-container');
     
-        if (message.author.info.is_admin) { 
-            message_author_span.setAttribute('style', 'font-weight: bold; color: var(--blue);')
+        if (message.author.info.roles.includes("admin")) { 
+            message_author_span.setAttribute('style', 'font-weight: bold; color: var(--orange);')
         } else {
             message_author_span.setAttribute('style', 'font-weight: bold; color: var(--neutral);')
         }
@@ -79,8 +80,8 @@ async function loadMessages(current_channel, main_message_container) {
                 let pc4_content = document.createElement('p');
                 pc4_content.innerHTML = `<p style=\'margin-top: 8px; color: var(--neutral); text-align: center;\'>${message.author.id}</span>`;
 
-                if (message.author.info.is_admin) {
-                    profile_author.innerHTML = `<span style=\'font-weight: bold; color: var(--blue);\'>${message.author.username}</span> <span style='color: var(--neutral);'>—— user profile</span>`
+                if (message.author.info.roles.includes('admin')) {
+                    profile_author.innerHTML = `<span style=\'font-weight: bold; color: var(--orange);\'>${message.author.username}</span> <span style='color: var(--neutral);'>—— user profile</span>`
                 } else {
                     profile_author.innerHTML = `<span style=\'font-weight: bold; color: var(--neutral);\'>${message.author.username}</span> <span style='color: var(--neutral);'>—— user profile</span>`
                 }
@@ -106,7 +107,6 @@ async function loadMessages(current_channel, main_message_container) {
                 profile_container.appendChild(profile_wrapper);
 
                 main_message_container.childNodes.item(array.indexOf(message_wrapper)).appendChild(profile_container);
-                console.log(array.indexOf(message_wrapper))
             } else {
                 profile_opened = false;
                 

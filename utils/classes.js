@@ -42,8 +42,17 @@ class Channel {
     }
 }
 
+class Server {
+    constructor(owner) {
+        this.createdAt = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+        this.owner = owner;
+        this.channels = [];
+        this.members = [];
+    }
+}
+
 class User {
-    constructor(email, username, password, is_admin = false, roles = []) {
+    constructor(email, username, password, roles = []) {
         // Credentials
         this.email = email;
         this.username = username;
@@ -52,9 +61,8 @@ class User {
 
         // Settings.
         let date = new Date();
-
         this.settings = {theme: 0, bg_url: null};
-        this.info = {roles: roles, description: "", is_admin: is_admin, join_date: date.toLocaleString("en-US", {timeZone: "America/New_York"})};
+        this.info = {roles: roles, description: "", join_date: date.toLocaleString("en-US", {timeZone: "America/New_York"})};
         this.allowed_channels = [0, 1, 2];
 
         (async () => {
